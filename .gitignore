@@ -396,3 +396,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Tiller project files
+Tiller.vcxproj
+Tiller.vcxproj.filters
