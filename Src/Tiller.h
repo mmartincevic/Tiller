@@ -9,6 +9,12 @@
 #include "TileMap.h"
 
 #define ENDL "\n"
+#define RESET   "\033[0m"
+#define RED     "\033[31m"
+#define GREEN   "\033[32m"
+#define YELLOW  "\033[33m"
+#define BLUE    "\033[34m"
+#define MAGENTA "\033[35m"
 
 namespace tile {
 
@@ -35,6 +41,16 @@ namespace tile {
 			std::vector<Tile> FormatLayerData(TileGroup tileGroup, TileLayer tileLayer, std::vector<std::vector<int>> rawData);
 			void PrintTile(const Tile& tile);
 
+			void EnableLog() { enableLogging = true; }
+			void DisableLog() { enableLogging = false; }
+
+			void Log(const char* color, const std::string& stringToLog, const char* add = "") {
+				if (enableLogging)
+				{
+					std::cout << color << add << "TILLER - " << stringToLog << RESET << ENDL;
+				}
+			}
+
 			inline TileMap* Map() { return m_Map; }
 
 		private:
@@ -44,6 +60,8 @@ namespace tile {
 		private:
 			Tiller() = default;  // Default constructor
 			~Tiller() = default; // Default destructor
+
+			bool enableLogging = false;
 
 			TileMap* m_Map;
 			std::string m_Path; 

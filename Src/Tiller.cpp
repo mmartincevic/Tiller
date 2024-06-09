@@ -5,13 +5,6 @@
 
 #include "Tileset.h"
 
-#define RESET   "\033[0m"
-#define RED     "\033[31m"
-#define GREEN   "\033[32m"
-#define YELLOW  "\033[33m"
-#define BLUE    "\033[34m"
-#define MAGENTA "\033[35m"
-
 using namespace tile;
 
 bool Tiller::Load(std::string path, std::string tmxName)
@@ -19,7 +12,7 @@ bool Tiller::Load(std::string path, std::string tmxName)
 	m_Path = path;
 	auto fullPath = path + tmxName + ".tmx";
 
-	std::cout << GREEN << "TILLER - Loading file: " << fullPath << RESET << ENDL;
+	Log(GREEN, "Loading file: " + fullPath);
 	return Parse("level1", fullPath);
 }
 
@@ -29,7 +22,7 @@ bool Tiller::Parse(std::string mapId, std::string source)
 	tinyxml2::XMLError eResult = xml.LoadFile(source.c_str());
 
 	if (eResult != tinyxml2::XML_SUCCESS) {
-		std::cout << RED << "TILLER - Error loading file: " << eResult << RESET << ENDL;
+		Log(RED, "Error loading file: " + eResult);
 		return false;
 	}
 
@@ -55,8 +48,8 @@ bool Tiller::Parse(std::string mapId, std::string source)
 				tileset = ParseClosedTileset(e);
 				tileset.ID = e->IntAttribute("firstgid");
 			}
-			std::cout << GREEN << "TILLER - Loading tileset: " << tileset.ID << RESET << ENDL;
 
+			Log(GREEN, "Loading tileset: " + tileset.ID);
 			m_Map->AddTileset(tileset);
 		}
 	}
@@ -72,8 +65,7 @@ bool Tiller::Parse(std::string mapId, std::string source)
 			tilegroup.Name = e->IntAttribute("name");
 			m_Map->AddGroup(tilegroup);
 
-			std::cout << YELLOW << "TILLER - Loading group: " << tilegroup.ID << RESET << ENDL;
-
+			Log(YELLOW, "Loading group: " + tilegroup.ID);
 			for (tinyxml2::XMLElement* l = e->FirstChildElement(); l != nullptr; l = l->NextSiblingElement())
 			{
 				if (l->Value() == std::string("layer"))
@@ -86,12 +78,12 @@ bool Tiller::Parse(std::string mapId, std::string source)
 					tilelayer.OffsetX = l->IntAttribute("offsetx", 0);
 					tilelayer.OffsetY = l->IntAttribute("offsety", 0);
 
-					std::cout << BLUE << "\tTILLER - Loading tilelayer: " << tilelayer.ID << RESET << ENDL;
+					Log(YELLOW, "Loading tilelayer: " + std::to_string(tilelayer.ID), "\t");
 					m_Map->AddLayer(tilelayer);
 
 					std::vector<std::vector<int>> dataParsed = ParseLayerData(l, tilelayer);
 
-					std::cout << GREEN << "\rTILLER - SAVING DATA " << tilegroup.ID << " - " << tilelayer.ID << RESET << ENDL;
+					Log(GREEN, "SAVING DATA " + std::to_string(tilegroup.ID) + " - " + std::to_string(tilelayer.ID), "\t");
 					m_Map->AddRawData(tilegroup.ID, tilelayer.ID, dataParsed);
 
 					m_Map->AddFormattedData(tilegroup.ID, tilelayer.ID, FormatLayerData(tilegroup, tilelayer, dataParsed));
@@ -177,13 +169,13 @@ std::vector<std::vector<int>> Tiller::ParseLayerData(tinyxml2::XMLElement* xmlLa
 	}
 
 	if (!data) {
-		std::cerr << RED <<  "TILLER - No data element found in layer" << RESET << ENDL;
+		Log(RED, "No data element found in layer", "\t");
 		return dataParsed;
 	}
 
 	const char* dataText = data->GetText();
 	if (!dataText) {
-		std::cerr << RED << "TILLER - No text found in data element" << RESET << std::endl;
+		Log(RED, "No text found in data element", "\t");
 		return dataParsed;
 	}
 
@@ -228,19 +220,19 @@ Tileset Tiller::ParseClosedTileset(tinyxml2::XMLElement* xmlTileset)
 	auto sourceFile = xmlTileset->Attribute("source");
 
 	tinyxml2::XMLDocument xml;
-	std::cout << GREEN << "TILER - Loading tileset : " << (m_Path + sourceFile) << RESET << ENDL;
 
+	Log(GREEN, "Loading tileset: " + (m_Path + sourceFile));
 	Tileset tileset;
 
 	tinyxml2::XMLError eResult = xml.LoadFile((m_Path + sourceFile).c_str());
 	if (eResult != tinyxml2::XML_SUCCESS) {
-		std::cout << RED << "TILLER - Error loading tileset file: " << eResult << RESET << ENDL;
+		Log(RED, "Error loading tileset file: " + eResult);
 		return tileset;
 	}
 
 	// TODO: Should raise error
 	if (eResult != tinyxml2::XML_SUCCESS) {
-		std::cout << RED << "Error loading file: " << eResult << RESET << std::endl;
+		Log(RED, "Error loading file: " + eResult);
 		return tileset;
 	}
 

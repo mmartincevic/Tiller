@@ -12,7 +12,9 @@ int main()
 {
     std::cout << "Hello World!\n";
 
+    tile::Tiller::Instance().EnableLog();
     tile::Tiller::Instance().Load("Resources/level2/", "level2");
+    tile::Tiller::Instance().DisableLog();
 
     //tile::Tiller::Instance().Map()->PrintMap();  // Print and test your map is being loaded
 
@@ -27,7 +29,7 @@ int main()
     }
 
     std::vector<std::vector<int>> layerData = tile::Tiller::Instance().Map()->RawLayer(35, 36);
-
+    
     for (int row = 0; row < 30; ++row)
     {
         std::vector<int> rowData = layerData[row];
@@ -77,7 +79,7 @@ int main()
         }
     }
 
-
+    
     // Now you can use raw data as above but you can also use formatted and slim down version of data
 
     std::vector<tile::Tile> formattedData = tile::Tiller::Instance().Map()->FormattedLayer(35, 36);
@@ -101,6 +103,5 @@ int main()
         std::cout << "col: " << tile.col << std::endl;
         std::cout << "imageSrc: " << tile.imageSrc << std::endl;
     }
-
 
 }
