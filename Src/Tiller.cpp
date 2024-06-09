@@ -68,7 +68,7 @@ bool Tiller::Parse(std::string mapId, std::string source)
 		{
 			TileGroup tilegroup;
 			tilegroup.ID = e->IntAttribute("id", 0);
-			tilegroup.Opacity = e->IntAttribute("opacity", 1);
+			tilegroup.Opacity = e->FloatAttribute("opacity", 1.0f);
 			tilegroup.Name = e->IntAttribute("name");
 			m_Map->AddGroup(tilegroup);
 
@@ -92,7 +92,9 @@ bool Tiller::Parse(std::string mapId, std::string source)
 					std::vector<std::vector<int>> dataParsed = ParseLayerData(l, tilelayer);
 
 					std::cout << GREEN << "\rTILLER - SAVING DATA " << tilegroup.ID << " - " << tilelayer.ID << RESET << ENDL;
-					m_Map->AddData(tilegroup.ID, tilelayer.ID, dataParsed);
+					m_Map->AddRawData(tilegroup.ID, tilelayer.ID, dataParsed);
+
+					m_Map->AddFormattedData(tilegroup.ID, tilelayer.ID, FormatLayerData(tilegroup, tilelayer, dataParsed));
 				}
 			}
 
@@ -100,6 +102,67 @@ bool Tiller::Parse(std::string mapId, std::string source)
 	}
 
 	return true;
+}
+
+std::vector<Tile> Tiller::FormatLayerData(TileGroup tileGroup, TileLayer tileLayer, std::vector<std::vector<int>> rawData)
+{
+	std::vector<Tile> fData;
+
+	for (int row = 0; row < rawData.size(); ++row)
+	{
+		for (int col = 0; col < rawData[row].size(); ++col)
+		{
+			auto gId = rawData[row][col];
+
+			if (gId > 0)
+			{
+				unsigned global_tile_id = gId;
+
+				bool flipped_horizontally = (global_tile_id & FLIPPED_HORIZONTALLY_FLAG);
+				bool flipped_vertically = (global_tile_id & FLIPPED_VERTICALLY_FLAG);
+				bool flipped_diagonally = (global_tile_id & FLIPPED_DIAGONALLY_FLAG);
+				bool rotated_hex120 = (global_tile_id & ROTATED_HEXAGONAL_120_FLAG);
+
+
+				global_tile_id &= ~(FLIPPED_HORIZONTALLY_FLAG |
+					FLIPPED_VERTICALLY_FLAG |
+					FLIPPED_DIAGONALLY_FLAG |
+					ROTATED_HEXAGONAL_120_FLAG);
+
+				auto firstgid = m_Map->FindFirstGid(global_tile_id);
+
+				Tile tile;
+				tile.gID = gId;
+				tile.lID = global_tile_id - *firstgid;
+				tile.row = row;
+				tile.col = col;
+				tile.groupID = tileGroup.ID;
+				tile.layerID = tileLayer.ID;
+				tile.opacity = tileGroup.Opacity; // not good
+				tile.width = tileLayer.Width;
+				tile.height = tileLayer.Height;
+				tile.imageSrc = m_Map->GetTileset(*firstgid).ImgSource;
+				tile.tilesetID = *firstgid;
+
+				if (flipped_horizontally) {
+					tile.rFlag = FLIPPED_HORIZONTALLY_FLAG;
+				}
+				else if (flipped_vertically) {
+					tile.rFlag = FLIPPED_VERTICALLY_FLAG;
+				}
+				else if (flipped_diagonally) {
+					tile.rFlag = FLIPPED_DIAGONALLY_FLAG;
+				}
+				else if (rotated_hex120) {
+					tile.rFlag = ROTATED_HEXAGONAL_120_FLAG;
+				}
+
+				fData.push_back(tile);
+			}
+		}
+	}
+
+	return fData;
 }
 
 std::vector<std::vector<int>> Tiller::ParseLayerData(tinyxml2::XMLElement* xmlLayer, TileLayer& layer) {
@@ -194,3 +257,18 @@ Tileset Tiller::ParseClosedTileset(tinyxml2::XMLElement* xmlTileset)
 	return tileset;
 }
 
+void Tiller::PrintTile(const Tile& tile) {
+	std::cout << "Tile properties:" << std::endl;
+	std::cout << "gID: " << tile.gID << std::endl;
+	std::cout << "lID: " << tile.lID << std::endl;
+	std::cout << "rFlag: " << tile.rFlag << std::endl;
+	std::cout << "tilesetID: " << tile.tilesetID << std::endl;
+	std::cout << "layerID: " << tile.layerID << std::endl;
+	std::cout << "groupID: " << tile.groupID << std::endl;
+	std::cout << "opacity: " << tile.opacity << std::endl;
+	std::cout << "width: " << tile.width << std::endl;
+	std::cout << "height: " << tile.height << std::endl;
+	std::cout << "row: " << tile.row << std::endl;
+	std::cout << "col: " << tile.col << std::endl;
+	std::cout << "imageSrc: " << tile.imageSrc << std::endl;
+}

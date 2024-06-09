@@ -10,7 +10,7 @@ namespace tile {
 	struct TileGroup
 	{
 		int ID;
-		int Opacity;
+		float Opacity = 1.0f;
 		std::string Name;
 	};
 
