@@ -16,7 +16,7 @@
 #define BLUE    "\033[34m"
 #define MAGENTA "\033[35m"
 
-namespace tile {
+namespace tiller {
 
 
 	const unsigned FLIPPED_HORIZONTALLY_FLAG = 0x80000000;

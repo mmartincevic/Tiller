@@ -14,7 +14,7 @@
 #include "Tileset.h"
 #include "Tile.h"
 
-namespace tile {
+namespace tiller {
 
 	class TileMap
 	{

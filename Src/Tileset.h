@@ -7,7 +7,7 @@
 #include <string>
 #include "tinyxml2.h"
 
-namespace tile {
+namespace tiller {
 
 	struct Tileset
 	{

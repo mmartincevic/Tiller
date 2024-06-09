@@ -5,7 +5,7 @@
 
 #include "Tileset.h"
 
-using namespace tile;
+using namespace tiller;
 
 bool Tiller::Load(std::string path, std::string tmxName)
 {

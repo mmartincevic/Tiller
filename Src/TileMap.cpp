@@ -2,7 +2,7 @@
 #include "Tile.h"
 #include "TileException.h"
 
-using namespace tile;
+using namespace tiller;
 
 
 std::optional<int> TileMap::FindFirstGid(int tileId) const {

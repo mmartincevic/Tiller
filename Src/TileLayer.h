@@ -5,7 +5,7 @@
 
 #include <string>
 
-namespace tile {
+namespace tiller {
 
 	struct TileLayer
 	{

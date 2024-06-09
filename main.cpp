@@ -12,23 +12,23 @@ int main()
 {
     std::cout << "Hello World!\n";
 
-    tile::Tiller::Instance().EnableLog();
-    tile::Tiller::Instance().Load("Resources/level2/", "level2");
-    tile::Tiller::Instance().DisableLog();
+    tiller::Tiller::Instance().EnableLog();
+    tiller::Tiller::Instance().Load("Resources/level2/", "level2");
+    tiller::Tiller::Instance().DisableLog();
 
     //tile::Tiller::Instance().Map()->PrintMap();  // Print and test your map is being loaded
 
     // If we run through tilesets we can get exactly which images we need to preload
     // Also there are few things that we can use to index those like tilesed.ID or tileset.Name
     // We can even combine it with map name
-    for (auto tileset : tile::Tiller::Instance().Map()->TileSet())
+    for (auto tileset : tiller::Tiller::Instance().Map()->TileSet())
     {
         std::cout << "Tileset name: " << tileset.second.Name << " - ";
-        std::cout << "Map name:" << tile::Tiller::Instance().Map()->Name() << " - ";
+        std::cout << "Map name:" << tiller::Tiller::Instance().Map()->Name() << " - ";
         std::cout << "Img src : " << tileset.second.ImgSource << ENDL;
     }
 
-    std::vector<std::vector<int>> layerData = tile::Tiller::Instance().Map()->RawLayer(35, 36);
+    std::vector<std::vector<int>> layerData = tiller::Tiller::Instance().Map()->RawLayer(35, 36);
     
     for (int row = 0; row < 30; ++row)
     {
@@ -41,10 +41,10 @@ int main()
             if (global_tile_id > 0)
             {
                 std::cout << "Tile: " << global_tile_id << ENDL;
-                bool flipped_horizontally = (global_tile_id & tile::FLIPPED_HORIZONTALLY_FLAG);
-                bool flipped_vertically = (global_tile_id & tile::FLIPPED_VERTICALLY_FLAG);
-                bool flipped_diagonally = (global_tile_id & tile::FLIPPED_DIAGONALLY_FLAG);
-                bool rotated_hex120 = (global_tile_id & tile::ROTATED_HEXAGONAL_120_FLAG);
+                bool flipped_horizontally = (global_tile_id & tiller::FLIPPED_HORIZONTALLY_FLAG);
+                bool flipped_vertically = (global_tile_id & tiller::FLIPPED_VERTICALLY_FLAG);
+                bool flipped_diagonally = (global_tile_id & tiller::FLIPPED_DIAGONALLY_FLAG);
+                bool rotated_hex120 = (global_tile_id & tiller::ROTATED_HEXAGONAL_120_FLAG);
 
                 if (flipped_horizontally)
                 {
@@ -66,10 +66,10 @@ int main()
                     std::cout << "Tile: " << global_tile_id << " is rotated hex120" << ENDL;
                 }
 
-                global_tile_id &= ~(tile::FLIPPED_HORIZONTALLY_FLAG |
-                    tile::FLIPPED_VERTICALLY_FLAG |
-                    tile::FLIPPED_DIAGONALLY_FLAG |
-                    tile::ROTATED_HEXAGONAL_120_FLAG);
+                global_tile_id &= ~(tiller::FLIPPED_HORIZONTALLY_FLAG |
+                    tiller::FLIPPED_VERTICALLY_FLAG |
+                    tiller::FLIPPED_DIAGONALLY_FLAG |
+                    tiller::ROTATED_HEXAGONAL_120_FLAG);
 
 
 
@@ -82,7 +82,7 @@ int main()
     
     // Now you can use raw data as above but you can also use formatted and slim down version of data
 
-    std::vector<tile::Tile> formattedData = tile::Tiller::Instance().Map()->FormattedLayer(35, 36);
+    std::vector<tiller::Tile> formattedData = tiller::Tiller::Instance().Map()->FormattedLayer(35, 36);
 
     for (auto tile : formattedData)
     {

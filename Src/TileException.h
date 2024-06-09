@@ -2,7 +2,7 @@
 #include <exception>
 #include <string>
 
-namespace tile
+namespace tiller
 {
     class TillerException : public std::exception {
         public:
